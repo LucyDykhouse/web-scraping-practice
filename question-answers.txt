@@ -1,0 +1,26 @@
+Take 5-10 minutes reviewing the butterfly data present on the UK Butterfly Conversation website. Then, answer the following questions:
+
+1: How is the site organized? If you want to create a butterfly dataset manually, how would you do it?
+
+The butterfly conservation website has a list of butterfly species at the endpoint /uk-butterflies/a-to-z. When a particular species is examined, the website directs the user to the enpoint /butterflies/<species name>. Thus, if I wanted to add butterfly dataset manually, I would make a new endpoint using that format and insert the data about the particular butterfly species.
+
+2: Is the data for each butterfly uniform (same properties available for each)?
+
+The same categories of data are available for all butterfly species (see question 3); however, the quantity of data included in each category is not consistent across the website. For instance, when describing the conservation status of the Northern Brown Argus, the website lists it as a Section 41 species under the NERC act with a high priority as its UK BAP status. It also mentions that the butterfly is on the Scottish Biodiversity List, has a high conservation priority, is not threatened in Europe, and is protected under Schedule 5 of the 1981 Wildlife and Countryside Act. For other butterflies, such as the Peacock Butterfly, the webiste only lists the butterfly conservation priority and European status.
+
+3: Which properties are available for each butterfly?
+
+The website displays six properties (then several subproperties) for each butterfly species. They are as follows:
+
+- Size and Family (Family, Size, Wing Span Range (male to female))
+
+- Conservation Status (Butterfly Conservation Priority, European Status)
+
+- Caterpillar Foodplants (description)
+
+- Lifecycle (chart)
+
+- Habitat (description)
+
+- Distribution (Countries, Distribution Trend Since 1970's)
+
