@@ -1,5 +1,6 @@
 import requests
 import re
+import csv
 from bs4 import BeautifulSoup
 
 
@@ -18,7 +19,7 @@ for link in links:
 # Make a list of links using list comprehension
 hrefs = [link.attrs.get('href') for link in links]
 
-# Skip over links that do not direct to butterfly pages
+# Skip over links that do not direct to butterfly pages or are not consistent
 butterfly_pages = hrefs[39:100]
 
 # Use list comprehension to generate full urls
@@ -34,21 +35,33 @@ def get_butterfly(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.text)
 
-    h1 = soup.find("h1")
+    try:
+        h1 = soup.find("h1")
 
-    name = h1.text
-    name = name.strip()      # strip off whitespace at end of name
+        name = h1.text
+        name = name.strip()      # strip off whitespace at end of name
 
-    family = soup.find("li", text=re.compile(r'Family:*'))
-    size = soup.find("li", text=re.compile(r'Size:*'))
-    wing_span = soup.find("li", text=re.compile(r'Wing Span:*'))
+        family = soup.find("li", text=re.compile(r'Family:*'))
+        size = soup.find("li", text=re.compile(r'Size:*'))
+        wing_span = soup.find("li", text=re.compile(r'Wing Span*'))
 
-    return {
-        'name': name, 
-        'family': peel_data_from_element(family),
-        'size': peel_data_from_element(size),
-        'wing span': peel_data_from_element(wing_span),
-        'url': url
+        return {
+            'name': name, 
+            'family': peel_data_from_element(family),
+            'size': peel_data_from_element(size),
+            'wing span': peel_data_from_element(wing_span),
+            'url': url
+            }
+
+    except:
+        print('Inconsistent format: ', url)
+        
+        return {
+            'name': ' ', 
+            'family': ' ',
+            'size': ' ',
+            'wing span': ' ',
+            'url': url
         }
 
 
@@ -56,9 +69,45 @@ def peel_data_from_element(element):
     """ Helper function to separate the label from the HTML element. """
 
     just_text = element.text
-    return just_text.split(': ')[1]
+    return just_text.split(':')[1]
+
+
+# Task 3: Produce a CSV of butterfly data
+
+
+def process_each_link(list):
+    """ Function to pass the list of links generated in Task 1 to the processing function from Task 2. """
+
+    all_data = []
+
+    for url in list:
+        all_data.append(get_butterfly(url))
+
+    return all_data
+
+
+def write_csv(data):
+    """ Function that writes all butterfly data to csv file. """
+
+    fields = ['name', 'url', 'family', 'wing span', 'size']
+    filename = 'butterfly_data.csv'
+
+    with open(filename, 'w') as csvfile:
+        
+        # Create a csv dict writer object
+        writer = csv.DictWriter(csvfile, fieldnames=fields)
+
+        # Write header
+        writer.writeheader()
+
+        # Write data rows
+        writer.writerows(data)
 
 
 # Invoke function for one butterfly page
 data = get_butterfly("https://butterfly-conservation.org/butterflies/green-veined-white")
 print(data)
+
+# Invoke functions for all butterfly pages
+data_list = process_each_link(urls)
+write_csv(data_list)
